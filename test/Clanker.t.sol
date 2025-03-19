@@ -2,34 +2,51 @@ pragma solidity ^0.8.25;
 
 import {Test} from "forge-std/Test.sol";
 import {Clanker} from "../src/Clanker.sol";
+import {LpLockerv2} from "../src/LpLockerv2.sol";
 import {console} from "forge-std/console.sol";
 
 contract ClankerTest is Test {
-    address constant LP_LOCKER_ADDRESS =
-        0x5eC4f99F342038c67a312a166Ff56e6D70383D86;
     address constant UNISWAPV3_ADDRESS =
         0x33128a8fC17869897dcE68Ed026d694621f6FDfD;
     address constant POSITION_MANAGER_ADDRESS =
         0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1;
     address constant SWAP_ROUTER_ADDRESS =
         0x2626664c2603336E57B271c5C0b26F421741e481;
-    address constant OWNER = 0xC1b1729127E4029174F183aB51a4B10c58Dc006d;
+    address constant OWNER = 0x7372d36388E5e7d2cf7B3B9b4dB106D442F9a1a7;
+    address constant CLANKER_ADDRESS =
+        0x59979986B39245FbE1A4219B54848e542B5f2355;
+    address constant CLANKER_TEAM_ADDRESS =
+        0x7372d36388E5e7d2cf7B3B9b4dB106D442F9a1a7;
+    uint256 constant CLANKER_TEAM_REWARD = 60;
 
     Clanker clanker;
+    LpLockerv2 lpLocker;
 
     function setUp() public {
-        clanker = new Clanker{
+        vm.startBroadcast(OWNER);
+        lpLocker = new LpLockerv2{
             salt: keccak256(
-                abi.encode("0xC1b1729127E4029174F183aB51a4B10c58Dc006d")
+                abi.encode("0x7372d36388E5e7d2cf7B3B9b4dB106D442F9a1a7")
             )
         }(
-            LP_LOCKER_ADDRESS,
+            CLANKER_ADDRESS,
+            POSITION_MANAGER_ADDRESS,
+            CLANKER_TEAM_ADDRESS,
+            CLANKER_TEAM_REWARD
+        );
+
+        clanker = new Clanker{
+            salt: keccak256(
+                abi.encode("0x7372d36388E5e7d2cf7B3B9b4dB106D442F9a1a7")
+            )
+        }(
+            address(lpLocker),
             UNISWAPV3_ADDRESS,
             POSITION_MANAGER_ADDRESS,
             SWAP_ROUTER_ADDRESS,
-            address(this)
+            OWNER
         );
-        clanker.setAdmin(OWNER, true);
+        lpLocker.updateClankerFactory(address(clanker));
         console.log("Clanker address: ", address(clanker));
         clanker.toggleAllowedPairedToken(
             0x4200000000000000000000000000000000000006,
@@ -43,7 +60,7 @@ contract ClankerTest is Test {
             "Test Symbol",
             1000000000,
             10000,
-            0xb64ad73e9d1a214027ab1686c16dcd175e06ca2110920a5439e4553519e742b3,
+            0xfd64a4064216e669183f9fd239f674557f855b54c9a7fe22761517c87123b69b,
             OWNER,
             0,
             "haha",
