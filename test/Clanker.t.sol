@@ -5,7 +5,7 @@ import {Clanker} from "../src/Clanker.sol";
 import {console} from "forge-std/console.sol";
 
 contract ClankerTest is Test {
-    address constant LOCKER_ADDRESS =
+    address constant LP_LOCKER_ADDRESS =
         0x5eC4f99F342038c67a312a166Ff56e6D70383D86;
     address constant UNISWAPV3_ADDRESS =
         0x33128a8fC17869897dcE68Ed026d694621f6FDfD;
@@ -23,7 +23,7 @@ contract ClankerTest is Test {
                 abi.encode("0xC1b1729127E4029174F183aB51a4B10c58Dc006d")
             )
         }(
-            LOCKER_ADDRESS,
+            LP_LOCKER_ADDRESS,
             UNISWAPV3_ADDRESS,
             POSITION_MANAGER_ADDRESS,
             SWAP_ROUTER_ADDRESS,
